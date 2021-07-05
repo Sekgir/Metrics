@@ -1,3 +1,6 @@
+using AutoMapper;
+using Dapper;
+using MetricsAgent.DAL;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -5,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Data;
 using System.Data.SQLite;
 
 namespace MetricsAgent
@@ -27,42 +31,26 @@ namespace MetricsAgent
             services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();
             services.AddSingleton<INetworkMetricsRepository, NetworkMetricsRepository>();
             services.AddSingleton<IRamMetricsRepository, RamMetricsRepository>();
+            var mapperConfiguration = new MapperConfiguration(mapperProfile => mapperProfile.AddProfile(new MapperProfile()));
+            var mapper = mapperConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         private void ConfigureSqlLiteConnection(IServiceCollection services)
         {
             const string connectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
-            var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-            PrepareSchema(connection);
+            SQLiteConnectionManager connectionManager = new SQLiteConnectionManager(connectionString);
+            services.AddSingleton<IConnectionManager, SQLiteConnectionManager>(item => connectionManager);
+            PrepareSchema(connectionManager.CreateOpenedConnection());
         }
 
-        private void PrepareSchema(SQLiteConnection connection)
+        private void PrepareSchema(IDbConnection connection)
         {
-            using (var command = new SQLiteCommand(connection))
-            {
-                command.CommandText = "DROP TABLE IF EXISTS CpuMetrics";
-                command.ExecuteNonQuery();
-                command.CommandText = "DROP TABLE IF EXISTS DotNetMetrics";
-                command.ExecuteNonQuery();
-                command.CommandText = "DROP TABLE IF EXISTS HddMetrics";
-                command.ExecuteNonQuery();
-                command.CommandText = "DROP TABLE IF EXISTS NetworkMetrics";
-                command.ExecuteNonQuery();
-                command.CommandText = "DROP TABLE IF EXISTS RamMetrics";
-                command.ExecuteNonQuery();
-
-                command.CommandText = @"CREATE TABLE CpuMetrics(id INTEGER PRIMARY KEY, value INT, time INT)";
-                command.ExecuteNonQuery();
-                command.CommandText = @"CREATE TABLE DotNetMetrics(id INTEGER PRIMARY KEY, value INT, time INT)";
-                command.ExecuteNonQuery();
-                command.CommandText = @"CREATE TABLE HddMetrics(id INTEGER PRIMARY KEY, value INT, time INT)";
-                command.ExecuteNonQuery();
-                command.CommandText = @"CREATE TABLE NetworkMetrics(id INTEGER PRIMARY KEY, value INT, time INT)";
-                command.ExecuteNonQuery();
-                command.CommandText = @"CREATE TABLE RamMetrics(id INTEGER PRIMARY KEY, value INT, time INT)";
-                command.ExecuteNonQuery();
-            }
+            connection.Execute(@"CREATE TABLE IF NOT EXISTS CpuMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
+            connection.Execute(@"CREATE TABLE IF NOT EXISTS DotNetMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
+            connection.Execute(@"CREATE TABLE IF NOT EXISTS HddMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
+            connection.Execute(@"CREATE TABLE IF NOT EXISTS NetworkMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
+            connection.Execute(@"CREATE TABLE IF NOT EXISTS RamMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
