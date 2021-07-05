@@ -1,6 +1,6 @@
-﻿using MetricsAgent;
-using MetricsAgent.Controllers;
-using MetricsAgent.DAL;
+﻿using MetricsAgent.Controllers;
+using MetricsAgent.DAL.Interfaces;
+using MetricsAgent.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
