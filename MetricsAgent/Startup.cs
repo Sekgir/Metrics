@@ -1,5 +1,6 @@
 using AutoMapper;
 using Dapper;
+using FluentMigrator.Runner;
 using MetricsAgent.DAL;
 using MetricsAgent.DAL.Interfaces;
 using MetricsAgent.DAL.Repositories;
@@ -47,7 +48,13 @@ namespace MetricsAgent
             const string connectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
             SQLiteConnectionManager connectionManager = new SQLiteConnectionManager(connectionString);
             services.AddSingleton<IConnectionManager, SQLiteConnectionManager>(item => connectionManager);
-            PrepareSchema(connectionManager.CreateOpenedConnection());
+            services.AddFluentMigratorCore()
+                .ConfigureRunner(runnerBuilder => runnerBuilder
+                    .AddSQLite()
+                    .WithGlobalConnectionString(connectionString)
+                    .ScanIn(typeof(Startup).Assembly).For.Migrations()
+                ).AddLogging(logger => logger
+                    .AddFluentMigratorConsole());
         }
 
         private void ConfigureJobFactory(IServiceCollection services)
@@ -78,16 +85,7 @@ namespace MetricsAgent
                 cronExpression: "0/5 * * * * ?"));
         }
 
-        private void PrepareSchema(IDbConnection connection)
-        {
-            connection.Execute(@"CREATE TABLE IF NOT EXISTS CpuMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
-            connection.Execute(@"CREATE TABLE IF NOT EXISTS DotNetMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
-            connection.Execute(@"CREATE TABLE IF NOT EXISTS HddMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
-            connection.Execute(@"CREATE TABLE IF NOT EXISTS NetworkMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
-            connection.Execute(@"CREATE TABLE IF NOT EXISTS RamMetrics(id INTEGER PRIMARY KEY, value INT, time INT)");
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
             if (env.IsDevelopment())
             {
@@ -104,6 +102,8 @@ namespace MetricsAgent
             {
                 endpoints.MapControllers();
             });
+
+            migrationRunner.MigrateUp();
         }
     }
 }
