@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsAgent.Responses
+namespace MetricsAgent.DTO
 {
-    public class RamMetricDto
+    public class DotNetMetricDto
     {
         public DateTimeOffset Date { get; set; }
         public int Value { get; set; }
-        public int Id { get; set; }
     }
 }
