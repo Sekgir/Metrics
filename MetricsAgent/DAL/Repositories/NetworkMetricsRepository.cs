@@ -32,7 +32,7 @@ namespace MetricsAgent.DAL.Repositories
         {
             using (var connection = _connectionManager.CreateOpenedConnection())
             {
-                var returnList = connection.Query<NetworkMetric>("SELECT * FROM NetworkMetrics where time >= @fromTime and time <= @toTime",
+                var returnList = connection.Query<NetworkMetric>("SELECT * FROM NetworkMetrics where time > @fromTime and time <= @toTime",
                     new
                     {
                         fromTime = fromTime.ToUnixTimeSeconds(),

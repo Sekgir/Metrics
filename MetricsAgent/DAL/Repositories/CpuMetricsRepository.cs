@@ -32,7 +32,7 @@ namespace MetricsAgent.DAL.Repositories
         {
             using (var connection = _connectionManager.CreateOpenedConnection())
             {
-                var returnList = connection.Query<CpuMetric>("SELECT * FROM CpuMetrics where time >= @fromTime and time <= @toTime",
+                var returnList = connection.Query<CpuMetric>("SELECT * FROM CpuMetrics where time > @fromTime and time <= @toTime",
                     new
                     {
                         fromTime = fromTime.ToUnixTimeSeconds(),

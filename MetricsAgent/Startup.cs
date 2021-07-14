@@ -32,7 +32,6 @@ namespace MetricsAgent
         {
             services.AddControllers();
             ConfigureSqlLiteConnection(services);
-            ConfigureJobFactory(services);
             services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
             services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
             services.AddSingleton<IHddMetricsRepository, HddMetricsRepository>();
@@ -41,6 +40,7 @@ namespace MetricsAgent
             var mapperConfiguration = new MapperConfiguration(mapperProfile => mapperProfile.AddProfile(new MapperProfile()));
             var mapper = mapperConfiguration.CreateMapper();
             services.AddSingleton(mapper);
+            ConfigureJobFactory(services);
         }
 
         private void ConfigureSqlLiteConnection(IServiceCollection services)
