@@ -37,9 +37,13 @@ namespace MetricsManager.Jobs
                 DateTimeOffset timeOfLastRecord = _ramMetricsRepository.GetTimeOfLastRecordByAgent(agentInfo.AgentId);
                 var request = new GetAllRamMetricsApiRequest() { ClientBaseAddress = agentInfo.AgentUrl, FromTime = timeOfLastRecord, ToTime = DateTimeOffset.UtcNow };
                 var response = _metricsAgentClient.GetAllRamMetrics(request);
-                response.Metrics.ForEach(metric => metric.AgentId = agentInfo.AgentId);
+                if (response == null)
+                {
+                    continue;
+                }
                 foreach (var metric in response.Metrics)
                 {
+                    metric.AgentId = agentInfo.AgentId;
                     _ramMetricsRepository.Create(_mapper.Map<RamMetricDto, RamMetric>(metric));
                 }
             }

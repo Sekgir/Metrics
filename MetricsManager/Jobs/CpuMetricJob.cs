@@ -37,9 +37,13 @@ namespace MetricsManager.Jobs
                 DateTimeOffset timeOfLastRecord = _cpuMetricsRepository.GetTimeOfLastRecordByAgent(agentInfo.AgentId);
                 var request = new GetAllCpuMetricsApiRequest() { ClientBaseAddress = agentInfo.AgentUrl, FromTime = timeOfLastRecord, ToTime = DateTimeOffset.UtcNow };
                 var response = _metricsAgentClient.GetAllCpuMetrics(request);
-                response.Metrics.ForEach(metric => metric.AgentId = agentInfo.AgentId);
+                if (response == null)
+                {
+                    continue;
+                }
                 foreach (var metric in response.Metrics)
                 {
+                    metric.AgentId = agentInfo.AgentId;
                     _cpuMetricsRepository.Create(_mapper.Map<CpuMetricDto, CpuMetric>(metric));
                 }
             }

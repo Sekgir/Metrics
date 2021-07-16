@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Polly;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
@@ -39,8 +40,9 @@ namespace MetricsManager
             services.AddControllers();
             ConfigureSqlLiteConnection(services);
             ConfigureJobFactory(services);
-            services.AddSingleton<HttpClient, HttpClient>();
-            services.AddSingleton<IMetricsAgentClient, MetricsAgentClient>();
+
+            services.AddHttpClient<IMetricsAgentClient, MetricsAgentClient>()
+                .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(1000)));
             services.AddSingleton<IMetricsAgentRepository, MetricsAgentRepository>();
             services.AddSingleton<ICpuMetricsRepository, CpuMetricsRepository>();
             services.AddSingleton<IDotNetMetricsRepository, DotNetMetricsRepository>();
