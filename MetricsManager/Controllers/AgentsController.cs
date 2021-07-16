@@ -3,6 +3,8 @@ using MetricsManager.DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using System.Linq;
+using MetricsManager.Responses;
 
 namespace MetricsManager.Controllers
 {
@@ -46,7 +48,11 @@ namespace MetricsManager.Controllers
         public IActionResult RegisteredAgents()
         {
             _logger.LogInformation($"Выполнение метода RegisteredAgents()");
-            return Ok();
+            var response = new AllMetricsAgentsApiResponse()
+            {
+                Agents = _metricsAgentRepository.GetAll().ToList()
+            };
+            return Ok(response);
         }
     }
 }

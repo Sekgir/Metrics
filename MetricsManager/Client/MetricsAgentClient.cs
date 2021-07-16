@@ -24,8 +24,8 @@ namespace MetricsManager.Client
 
         public AllCpuMetricsApiResponse GetAllCpuMetrics(GetAllCpuMetricsApiRequest request)
         {
-            var fromParameter = request.FromTime.ToString("s");
-            var toParameter = request.ToTime.ToString("s");
+            var fromParameter = request.FromTime.ToString("o");
+            var toParameter = request.ToTime.ToString("o");
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{request.ClientBaseAddress}/api/metrics/cpu/from/{fromParameter}/to/{toParameter}");
             var jsonOptions = new JsonSerializerOptions
             {
@@ -46,8 +46,8 @@ namespace MetricsManager.Client
 
         public AllDotNetMetricsApiResponse GetAllDotNetMetrics(GetAllDotNetMetricsApiRequest request)
         {
-            var fromParameter = request.FromTime.ToString("s");
-            var toParameter = request.ToTime.ToString("s");
+            var fromParameter = request.FromTime.ToString("o");
+            var toParameter = request.ToTime.ToString("o");
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{request.ClientBaseAddress}/api/metrics/dotnet/from/{fromParameter}/to/{toParameter}");
             var jsonOptions = new JsonSerializerOptions
             {
@@ -68,8 +68,8 @@ namespace MetricsManager.Client
 
         public AllHddMetricsApiResponse GetAllHddMetrics(GetAllHddMetricsApiRequest request)
         {
-            var fromParameter = request.FromTime.ToString("s");
-            var toParameter = request.ToTime.ToString("s");
+            var fromParameter = request.FromTime.ToString("o");
+            var toParameter = request.ToTime.ToString("o");
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{request.ClientBaseAddress}/api/metrics/hdd/from/{fromParameter}/to/{toParameter}");
             var jsonOptions = new JsonSerializerOptions
             {
@@ -90,8 +90,8 @@ namespace MetricsManager.Client
 
         public AllNetworkMetricsApiResponse GetAllNetworkMetrics(GetAllNetworkMetricsApiRequest request)
         {
-            var fromParameter = request.FromTime.ToString("s");
-            var toParameter = request.ToTime.ToString("s");
+            var fromParameter = request.FromTime.ToString("o");
+            var toParameter = request.ToTime.ToString("o");
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{request.ClientBaseAddress}/api/metrics/network/from/{fromParameter}/to/{toParameter}");
             var jsonOptions = new JsonSerializerOptions
             {
@@ -112,8 +112,8 @@ namespace MetricsManager.Client
 
         public AllRamMetricsApiResponse GetAllRamMetrics(GetAllRamMetricsApiRequest request)
         {
-            var fromParameter = request.FromTime.ToString("s");
-            var toParameter = request.ToTime.ToString("s");
+            var fromParameter = request.FromTime.ToString("o");
+            var toParameter = request.ToTime.ToString("o");
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{request.ClientBaseAddress}/api/metrics/ram/from/{fromParameter}/to/{toParameter}");
             var jsonOptions = new JsonSerializerOptions
             {

@@ -96,6 +96,8 @@ namespace MetricsManager
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
+            migrationRunner.MigrateUp();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -111,8 +113,6 @@ namespace MetricsManager
             {
                 endpoints.MapControllers();
             });
-
-            migrationRunner.MigrateUp();
         }
     }
 }
