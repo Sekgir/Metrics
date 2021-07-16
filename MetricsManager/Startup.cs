@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Polly;
 using Quartz;
 using Quartz.Impl;
@@ -38,6 +39,7 @@ namespace MetricsManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            ConfigureSwagger(services);
             ConfigureSqlLiteConnection(services);
             ConfigureJobFactory(services);
 
@@ -58,7 +60,7 @@ namespace MetricsManager
         {
             const string connectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
             SQLiteConnectionManager connectionManager = new SQLiteConnectionManager(connectionString);
-            services.AddSingleton<IConnectionManager, SQLiteConnectionManager>(item => connectionManager);
+            services.AddSingleton<IConnectionManager>(connectionManager);
             services.AddFluentMigratorCore()
                 .ConfigureRunner(runnerBuilder => runnerBuilder
                     .AddSQLite()
@@ -96,6 +98,32 @@ namespace MetricsManager
                 cronExpression: "0/5 * * * * ?"));
         }
 
+        private void ConfigureSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "API сервиса менеджера сбора метрик",
+                    Description = "Тут можно поиграть с api нашего сервиса",
+                    TermsOfService = new Uri("https://example.com/terms"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Kadyrov",
+                        Email = string.Empty,
+                        Url = new Uri("https://kremlin.ru"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "можно указать под какой лицензией все опубликовано",
+                        Url = new Uri("https://example.com/license"),
+                    }
+                });
+            });
+        }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
             migrationRunner.MigrateUp();
@@ -114,6 +142,13 @@ namespace MetricsManager
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API сервиса менеджера сбора метрик");
             });
         }
     }
