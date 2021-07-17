@@ -22,6 +22,16 @@ namespace MetricsManager.Controllers
             _logger.LogDebug(1, "NLog встроен в AgentsController");
         }
 
+        /// <summary>
+        /// Добавить запись нового агента 
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        ///
+        ///     POST api/agents/register
+        ///
+        /// </remarks>
+        /// <returns>Success</returns>
         [HttpPost("register")]
         public IActionResult RegisterAgent([FromBody] AgentInfo agentInfo)
         {
@@ -44,6 +54,16 @@ namespace MetricsManager.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Получить список агентов
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        ///
+        ///     GET api/agents/registered
+        ///
+        /// </remarks>
+        /// <returns>Success</returns>
         [HttpGet("registered")]
         public IActionResult RegisteredAgents()
         {

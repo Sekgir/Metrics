@@ -18,6 +18,8 @@ using Quartz.Spi;
 using System;
 using System.Data;
 using System.Data.SQLite;
+using System.IO;
+using System.Reflection;
 
 namespace MetricsAgent
 {
@@ -98,20 +100,11 @@ namespace MetricsAgent
                 {
                     Version = "v1",
                     Title = "API сервиса агента сбора метрик",
-                    Description = "Тут можно поиграть с api нашего сервиса",
-                    TermsOfService = new Uri("https://example.com/terms"),
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Kadyrov",
-                        Email = string.Empty,
-                        Url = new Uri("https://kremlin.ru"),
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "можно указать под какой лицензией все опубликовано",
-                        Url = new Uri("https://example.com/license"),
-                    }
+                    Description = "Тут можно поиграть с api нашего сервиса"
                 });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
         }
 
