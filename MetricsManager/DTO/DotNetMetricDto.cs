@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MetricsManager
+namespace MetricsManager.DTO
 {
-    public class AgentInfo
+    public class DotNetMetricDto
     {
         public int AgentId { get; set; }
-
-        public Uri AgentAddress { get; set; }
+        public DateTimeOffset Date { get; set; }
+        public int Value { get; set; }
     }
 }

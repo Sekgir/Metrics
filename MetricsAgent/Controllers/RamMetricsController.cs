@@ -29,7 +29,7 @@ namespace MetricsAgent.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("available/from/{fromTime}/to/{toTime}")]
+        [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GiveMetricsToManager([FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
         {
             _logger.LogInformation($"Выполнение метода GiveMetricsToManager(fromTime = {fromTime}, toTime = {toTime})");

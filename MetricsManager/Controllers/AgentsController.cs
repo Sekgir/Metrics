@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MetricsManager.DAL.Models;
+using MetricsManager.DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
+using System.Linq;
+using MetricsManager.Responses;
 
 namespace MetricsManager.Controllers
 {
@@ -14,10 +13,12 @@ namespace MetricsManager.Controllers
     public class AgentsController : ControllerBase
     {
         private readonly ILogger<AgentsController> _logger;
+        private readonly IMetricsAgentRepository _metricsAgentRepository;
 
-        public AgentsController(ILogger<AgentsController> logger)
+        public AgentsController(ILogger<AgentsController> logger, IMetricsAgentRepository metricsAgentRepository)
         {
             _logger = logger;
+            _metricsAgentRepository = metricsAgentRepository;
             _logger.LogDebug(1, "NLog встроен в AgentsController");
         }
 
@@ -25,6 +26,7 @@ namespace MetricsManager.Controllers
         public IActionResult RegisterAgent([FromBody] AgentInfo agentInfo)
         {
             _logger.LogInformation($"Выполнение метода RegisterAgent(AgentInfo {JsonSerializer.Serialize(agentInfo)})");
+            _metricsAgentRepository.Create(agentInfo);
             return Ok();
         }
 
@@ -46,7 +48,11 @@ namespace MetricsManager.Controllers
         public IActionResult RegisteredAgents()
         {
             _logger.LogInformation($"Выполнение метода RegisteredAgents()");
-            return Ok();
+            var response = new AllMetricsAgentsApiResponse()
+            {
+                Agents = _metricsAgentRepository.GetAll().ToList()
+            };
+            return Ok(response);
         }
     }
 }
