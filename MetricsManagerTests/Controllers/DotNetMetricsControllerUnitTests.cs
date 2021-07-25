@@ -1,5 +1,7 @@
-﻿using MetricsManager;
+﻿using AutoMapper;
+using MetricsManager;
 using MetricsManager.Controllers;
+using MetricsManager.DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,11 +14,15 @@ namespace MetricsManagerTests.Controllers
     {
         private DotNetMetricsController controller;
         private Mock<ILogger<DotNetMetricsController>> mockLogger;
+        private Mock<IDotNetMetricsRepository> mockRepository;
+        private Mock<IMapper> mockMapper;
 
         public DotNetMetricsControllerUnitTests()
         {
             mockLogger = new Mock<ILogger<DotNetMetricsController>>();
-            controller = new DotNetMetricsController(mockLogger.Object);
+            mockRepository = new Mock<IDotNetMetricsRepository>();
+            mockMapper = new Mock<IMapper>();
+            controller = new DotNetMetricsController(mockLogger.Object, mockRepository.Object, mockMapper.Object);
         }
 
         [Fact]
