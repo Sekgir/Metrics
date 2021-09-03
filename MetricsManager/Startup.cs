@@ -14,14 +14,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Polly;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MetricsManager
@@ -38,6 +41,7 @@ namespace MetricsManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            ConfigureSwagger(services);
             ConfigureSqlLiteConnection(services);
             ConfigureJobFactory(services);
 
@@ -58,7 +62,7 @@ namespace MetricsManager
         {
             const string connectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
             SQLiteConnectionManager connectionManager = new SQLiteConnectionManager(connectionString);
-            services.AddSingleton<IConnectionManager, SQLiteConnectionManager>(item => connectionManager);
+            services.AddSingleton<IConnectionManager>(connectionManager);
             services.AddFluentMigratorCore()
                 .ConfigureRunner(runnerBuilder => runnerBuilder
                     .AddSQLite()
@@ -96,6 +100,23 @@ namespace MetricsManager
                 cronExpression: "0/5 * * * * ?"));
         }
 
+        private void ConfigureSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "API сервиса менеджера сбора метрик",
+                    Description = "Тут можно поиграть с api нашего сервиса"
+                });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+        }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMigrationRunner migrationRunner)
         {
             migrationRunner.MigrateUp();
@@ -114,6 +135,13 @@ namespace MetricsManager
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API сервиса менеджера сбора метрик");
             });
         }
     }

@@ -29,6 +29,19 @@ namespace MetricsAgent.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Получает метрики DotNet на заданном диапазоне времени
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        ///
+        ///     GET api/metrics/dotnet/from/2021-07-15T00:00:00Z/to/2021-07-17T23:59:59Z
+        ///
+        /// </remarks>
+        /// <param name="fromTime">начальная метка времени</param>
+        /// <param name="toTime">конечная метка времени</param>
+        /// <returns>Список метрик, которые были сохранены в заданном диапазоне времени</returns>
+        /// <returns>Success</returns>
         [HttpGet("from/{fromTime}/to/{toTime}")]
         public IActionResult GiveMetricsToManager([FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
         {
@@ -41,6 +54,16 @@ namespace MetricsAgent.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Создание записи DotNet метрики с указанными значениями
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        ///
+        ///     POST api/metrics/dotnet/create
+        ///
+        /// </remarks>
+        /// <returns>Success</returns>
         [HttpPost("create")]
         public IActionResult Create([FromBody] DotNetMetricCreateRequest request)
         {

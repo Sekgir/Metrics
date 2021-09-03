@@ -29,6 +29,20 @@ namespace MetricsManager.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Получение метрик Network на заданном диапазоне времени по определенному агенту
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        ///
+        ///     GET api/metrics/network/agent/1/from/2021-07-15T00:00:00Z/to/2021-07-17T23:59:59Z
+        ///
+        /// </remarks>
+        /// <param name="agentId">ID агентами</param>
+        /// <param name="fromTime">начальная метка времени</param>
+        /// <param name="toTime">конечная метка времени</param>
+        /// <returns>Список метрик, которые были сохранены в заданном диапазоне времени по указанному агенту</returns>
+        /// <returns>Success</returns>
         [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetricsFromAgent([FromRoute] int agentId, [FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
         {
@@ -41,6 +55,19 @@ namespace MetricsManager.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Получение метрик Network на заданном диапазоне времени по всем агентам
+        /// </summary>
+        /// <remarks>
+        /// Пример запроса:
+        ///
+        ///     GET api/metrics/network/from/2021-07-15T00:00:00Z/to/2021-07-17T23:59:59Z
+        ///
+        /// </remarks>
+        /// <param name="fromTime">начальная метка времени</param>
+        /// <param name="toTime">конечная метка времени</param>
+        /// <returns>Список метрик, которые были сохранены в заданном диапазоне времени по всем агентам</returns>
+        /// <returns>Success</returns>
         [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
         public IActionResult GetMetricsFromAllCluster([FromRoute] DateTimeOffset fromTime, [FromRoute] DateTimeOffset toTime)
         {
