@@ -51,7 +51,8 @@ namespace MetricsAgent
 
         private void ConfigureSqlLiteConnection(IServiceCollection services)
         {
-            const string connectionString = "Data Source=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
+            var projectFolder = Path.GetRelativePath(Environment.CurrentDirectory, AppDomain.CurrentDomain.BaseDirectory);
+            string connectionString = $"Data Source={projectFolder}metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
             SQLiteConnectionManager connectionManager = new SQLiteConnectionManager(connectionString);
             services.AddSingleton<IConnectionManager>(connectionManager);
             services.AddFluentMigratorCore()
